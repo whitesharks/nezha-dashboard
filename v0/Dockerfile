@@ -29,10 +29,7 @@ RUN set -ex && \
     # 3.2 header/footer 通用前缀替换
     sed -i 's|https://lf6-cdn-tos\.bytecdntp\.com/cdn/expire-1-y|https://cdn.bootcdn.net/ajax/libs|g' \
         resource/template/theme-angel-kanade/header.html \
-        resource/template/theme-angel-kanade/footer.html && \
-    # 3.3 版本号纠正（font-logos 0.17）
-    sed -i 's|cdn\.bootcdn\.net/ajax/libs/font-logos/0\.19|cdn.bootcdn.net/ajax/libs/font-logos/0.17|g' \
-        resource/template/theme-angel-kanade/header.html
+        resource/template/theme-angel-kanade/footer.html
 # 4. 编译二进制
 RUN set -ex \
     && go mod tidy -v \
