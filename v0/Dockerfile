@@ -19,6 +19,8 @@ RUN set -ex \
     && apk add --update --no-cache git gcc musl-dev \
     && git clone --depth=1 --branch ${NEZHA_VERSION} https://github.com/nezhahq/nezha.git .
 COPY geoip.db /go/src/github.com/naiba/nezha/pkg/geoip/geoip.db
+RUN sed -i 's|https://lf6-cdn-tos\.bytecdntp\.com/cdn/expire-1-y/flag-icon-css/4\.1\.5/flags/1x1/|https://cdn.jsdelivr.net/npm/flag-icon-css@4.1.5/flags/1x1/|g' \
+        resource/template/theme-angel-kanade/home.html
 RUN set -ex \
     && go mod tidy -v \
     && go build -v -trimpath -ldflags="\
