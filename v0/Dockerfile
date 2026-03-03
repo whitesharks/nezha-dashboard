@@ -21,15 +21,17 @@ RUN set -ex \
     && git clone --depth=1 --branch ${NEZHA_VERSION} https://github.com/nezhahq/nezha.git .
 # 2. 复制 geoip
 COPY geoip.db /go/src/github.com/naiba/nezha/pkg/geoip/geoip.db
-# 3. 统一替换所有失效的 lf6-cdn-tos 资源（全部切到 cdn.staticfile.org 国内镜像）
+
+# 3. 统一替换资源为今日头条源
 RUN set -ex && \
-    # 3.1 home.html 国旗 CDN
-    sed -i 's|https://lf6-cdn-tos\.bytecdntp\.com/cdn/expire-1-y/flag-icon-css/4\.1\.5/flags/1x1/|https://s3.pstatp.com/cdn/flag-icon-css/4.1.5/flags/1x1/|g' \
-        resource/template/theme-angel-kanade/home.html && \
-    # 3.2 header/footer 通用前缀替换
-    sed -i 's|https://lf6-cdn-tos\.bytecdntp\.com/cdn/expire-1-y|https://s3.pstatp.com|g' \
-        resource/template/theme-angel-kanade/header.html \
-        resource/template/theme-angel-kanade/footer.html
+    # 3.1 预处理：定义目标前缀，确保包含 /cdn/
+    # 注意：这里直接匹配到 expire 这一层，将其整体替换为 pstatp 的 cdn 路径
+    TARGET_CDN="https://s3.pstatp.com/cdn" && \
+    ORIGIN_CDN="https://lf6-cdn-tos\.bytecdntp\.com/cdn/expire-1-[ym]" && \
+    \
+    # 批量替换所有模板文件中的前缀
+    find resource/template/theme-angel-kanade/ -type f -name "*.html" | xargs sed -i "s|${ORIGIN_CDN}|${TARGET_CDN}|g"
+
 # 4. 编译二进制
 RUN set -ex \
     && go mod tidy -v \
